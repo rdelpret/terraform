@@ -32,16 +32,6 @@ variable "web_server_instance_type" {
 	default     = "t2.micro"
 }
 
-variable "web_server_start_script" {
-	description = "Script to start webserver"
-	type        = string
-	default     = <<-EOF
-              #!/bin/bash
-              echo "Hello, World" > index.html
-              nohup busybox httpd -f -p $(var.server_port)  &
-              EOF
-}
-
 ##################
 #                #
 # DATA           #
@@ -86,7 +76,11 @@ resource "aws_launch_configuration" "webcluster-lc" {
 	image_id        = var.web_server_ami
 	instance_type   = var.web_server_instance_type
   security_groups = [aws_security_group.allow-http.id]
-	user_data       = var.web_server_start_script
+	user_data       = <<-EOF
+                  #!/bin/bash
+                  echo "Hello, World" > index.html
+                  nohup busybox httpd -f -p ${var.server_port} &
+                  EOF 
 }
 
 # ASG
@@ -155,7 +149,7 @@ resource "aws_security_group" "http-alb" {
 }
 
 resource "aws_lb_target_group" "web-cluster-asg" {
-	name     = "terraform-asg-example"
+	name     = "web-cluster-asg"
   port     = var.server_port
 	protocol = "HTTP"
 	vpc_id   = data.aws_vpc.default.id
