@@ -3,7 +3,7 @@ output "cidr_block" {
 }
 
 output "private_subnets" {
-  value = ["${aws_subnet.private.*.id}"]
+  value = "${aws_subnet.private.*.id}"
 }
 
 output "private_availability_zones" {
@@ -15,7 +15,7 @@ output "public_availability_zones" {
 }
 
 output "public_subnets" {
-  value = ["${aws_subnet.public.*.id}"]
+  value = "${aws_subnet.public.*.id}"
 }
 
 output "vpc_name" {
